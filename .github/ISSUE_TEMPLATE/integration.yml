@@ -1,0 +1,44 @@
+name: Integration
+description: Propose a software, API, model, or MCP integration.
+title: "[Integration] "
+labels: ["integration"]
+body:
+  - type: textarea
+    id: tool
+    attributes:
+      label: Tool, API, or service
+      description: Name the tool and link to docs or source code.
+    validations:
+      required: true
+  - type: dropdown
+    id: layer
+    attributes:
+      label: Architecture layer
+      options:
+        - Capture
+        - Understanding
+        - Memory
+        - Interface
+        - Governance
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: Why this matters
+      description: Explain how it helps build an AI-native second brain.
+    validations:
+      required: true
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation sketch
+      description: Describe the adapter, workflow, MCP server, data schema, or model call.
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and open questions
+      description: Include privacy, retention, cost, reliability, and vendor lock-in concerns.
+

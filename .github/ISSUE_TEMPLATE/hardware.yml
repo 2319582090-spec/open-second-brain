@@ -1,0 +1,41 @@
+name: Hardware
+description: Propose or evaluate a hardware device for Open Second Brain.
+title: "[Hardware] "
+labels: ["hardware"]
+body:
+  - type: textarea
+    id: device
+    attributes:
+      label: Device or hardware category
+      description: Name the device, prototype, sensor, wearable, recorder, camera, phone, glasses, or home device.
+    validations:
+      required: true
+  - type: dropdown
+    id: modality
+    attributes:
+      label: Capture modality
+      options:
+        - Audio
+        - Image
+        - Video
+        - Location
+        - Health
+        - Environment
+        - Mixed
+    validations:
+      required: true
+  - type: textarea
+    id: integration
+    attributes:
+      label: Integration path
+      description: Does it expose an API, SDK, export, Bluetooth stream, local file, cloud sync, or MCP adapter?
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Battery, storage, privacy indicators, consent, platform support, cost, availability.
+    validations:
+      required: true
+

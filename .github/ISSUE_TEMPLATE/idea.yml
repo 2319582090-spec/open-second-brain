@@ -1,0 +1,36 @@
+name: Idea
+description: Propose a new Open Second Brain idea.
+title: "[Idea] "
+labels: ["idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share an idea for an open, AI-native second brain.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the user need or missing capability.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposed idea
+      description: Explain the concept, workflow, or feature.
+    validations:
+      required: true
+  - type: textarea
+    id: privacy
+    attributes:
+      label: Privacy and consent considerations
+      description: What data is captured, retained, shared, or deleted?
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Link to related tools, papers, products, repos, demos, or sketches.
+
