@@ -1,6 +1,5 @@
 blank_issues_enabled: true
 contact_links:
   - name: Open Second Brain discussions
-    url: https://github.com/
-    about: Use discussions for open-ended ideas once discussions are enabled.
-
+    url: https://github.com/2319582090-spec/open-second-brain/discussions
+    about: Use discussions for open-ended ideas, community proposals, and broad design questions.
