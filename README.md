@@ -1,95 +1,236 @@
-# Open Second Brain
+# Open Second Brain / 第二大脑
 
-Star this repo if you want to help build an open second brain.
+一个面向个人 Lifelogging 与本地 AI 检索的开放第二大脑项目。
 
-An open-source project for building a 24-hour AI-native second brain.
+项目目标不是一次性导入过去所有数据，而是从现在开始，持续记录每天发生的关键数据，让 Mac、iPhone、Android 以及后续外部录音、监控设备产生的信息，自动汇聚到 Mac mini M4 挂载的外置硬盘中，并逐步形成可搜索、可审计、可复盘的个人记忆系统。
 
-We believe the next personal computer is not only a screen, a phone, or a wearable device. It is a continuous memory layer that understands what we see, hear, read, say, build, eat, visit, and decide.
+第一阶段追求最低可落地版本：先把数据稳定记录下来，再逐步接入 AI 理解和本地 RAG 检索。
 
-Open Second Brain is a community effort to connect software, hardware, AI models, personal databases, and memory protocols into one open architecture.
+## 核心任务
 
-This is not another note-taking app.
-This is an attempt to build an open, human-owned, multimodal life memory system.
+构建一个全自动化的数据汇聚与智能检索系统，将 Mac、iPhone、Android 及外部录音/监控数据，同步至 Mac mini M4 挂载的外置硬盘，并在后续实现本地化 RAG 查询。
 
-## We Are Looking For Builders
+## 硬件与存储定义
 
-We invite people to co-create this project:
+- 主控中心：Mac mini M4，建议 16GB+ RAM。
+- 存储中心：外置硬盘。
+- 挂载路径：`/Volumes/SecondBrain_Vault/`。
+- 数据规范：所有原始数据按 `YYYY-MM-DD_Source_Type` 格式存入外置硬盘。
 
-- AI engineers building memory, retrieval, agents, and multimodal understanding
-- Hardware builders working on wearables, smart glasses, audio recorders, sensors, and home devices
-- App developers connecting desktop, mobile, browser, and cloud workflows
-- Privacy and security researchers designing local-first personal data systems
-- Designers imagining how humans should search, review, and talk to their own life memory
-- Everyday users who want a second brain that belongs to them
+示例：
 
-If you are building something related to AI memory, lifelogging, wearable computing, personal knowledge, or local-first AI, open an issue and introduce your idea.
+```text
+2026-05-18_Mac_Screenshot
+2026-05-18_iPhone_Voice
+2026-05-18_Android_FolderSync
+```
 
-## Core Idea
+## V1 最低落地版本
 
-Open Second Brain is based on five layers:
+V1 不导入历史数据，只从启用当天开始记录。第一版优先集成现成工具，不开发重型系统。
 
-1. Capture Layer: screen, audio, photos, files, browser activity, location, health, wearable sensors, smart glasses, and cameras.
-2. Understanding Layer: OCR, speech-to-text, image/video understanding, entity extraction, summarization, and intent detection.
-3. Memory Layer: timeline, vector memory, temporal knowledge graph, personal facts, relationships, preferences, and project history.
-4. Interface Layer: desktop app, mobile app, MCP servers, browser extension, API, and AI assistant integrations.
-5. Governance Layer: local-first storage, encryption, consent, redaction, retention rules, and user-owned export.
+### V1 要做
 
-## Why Now
+- Mac 下载文件、桌面文件、截图文件自动归档。
+- iPhone 录音、语音转文字、快速笔记通过 iCloud Drive 落地。
+- Android 指定文件夹通过 FolderSync + SMB 同步到 Mac 外置硬盘。
+- 外置硬盘建立统一目录规范。
+- 为 AnythingLLM / Dify / Ollama 本地 AI 查询层预留目录。
 
-Personal AI is moving from chat windows into continuous context. Screens, meetings, cameras, phones, wearables, smart glasses, and home devices already generate the raw material of memory. The missing piece is an open architecture that lets people own, search, reason over, and selectively share that memory.
+### V1 暂不做
 
-The goal of Open Second Brain is to turn fragmented lifelogging and personal knowledge tools into a practical, user-owned memory stack.
+- 不采集摄像头原始视频流。
+- 不做 24 小时持续录屏。
+- 不默认采集通知、短信、通话原始内容。
+- 不立刻部署 AnythingLLM / Dify / Ollama。
 
-## What This Project Is
+## 各端集成逻辑
 
-- A public map of software, hardware, protocols, and AI memory patterns.
-- A reference architecture for 24-hour multimodal capture and recall.
-- A place to coordinate integrations between tools such as Screenpipe, Omi, Pieces, Graphiti, Mem0, Supermemory, local models, cloud models, and MCP clients.
-- A community space for prototypes, issues, experiments, and design proposals.
+### Mac 端
 
-## What This Project Is Not
+Mac 是数据汇聚中心。
 
-- It is not another manual note-taking app.
-- It is not a surveillance product.
-- It is not a cloud-only personal data warehouse.
-- It is not a closed hardware ecosystem.
-- It is not a promise that every moment should be recorded forever.
+优先使用系统自带的 Automator、Shortcuts、Folder Actions 做自动整理，监控以下来源：
 
-## Principles
+- `~/Downloads`
+- `~/Desktop`
+- 系统截图目录
+- iCloud Drive 中的 SecondBrain 收件箱
 
-- Human-owned memory: the person owns the data, export, deletion, and sharing rules.
-- Local-first by default: raw sensitive data should stay on trusted devices whenever possible.
-- Consent-aware capture: people nearby must be respected, and recording boundaries must be visible and configurable.
-- Multimodal from day one: text alone is not enough; life includes audio, images, video, activity, location, files, and relationships.
-- AI-native recall: the system should answer questions, create timelines, find patterns, and surface unfinished decisions.
-- Open protocols: MCP, APIs, export formats, and interoperable schemas matter more than one app.
+默认策略：
 
-## Early Integration Targets
+- 复制，不移动，避免误删。
+- 只处理顶层文件。
+- 跳过隐藏文件、临时文件、目录、照片库和应用资料库。
+- 外置硬盘未挂载时不执行同步。
 
-- Desktop memory: Screenpipe, Pieces OS, browser activity, files, local search.
-- Mobile memory: phone photos, audio notes, health data, location history, messages where legally and technically allowed.
-- Wearable memory: Omi, smart glasses, audio recorders, sensors.
-- AI memory: Graphiti, Mem0/OpenMemory, Supermemory, local vector stores, temporal knowledge graphs.
-- AI interfaces: Codex, Cursor, Claude, ChatGPT, Doubao, local LLM apps, MCP clients.
+后续可接入：
 
-## Repository Map
+- Limitless / Rewind：会议、屏幕和上下文记录。
+- Screenpipe：开源本地屏幕与音频记录。
 
-- [Architecture](ARCHITECTURE.md): the proposed software and hardware stack.
-- [Roadmap](ROADMAP.md): the path from MVP to a 24-hour AI-native second brain.
-- [Tools](docs/tools.md): existing projects and services we are tracking.
-- [Contributing](CONTRIBUTING.md): how to join the community and propose ideas.
+### iPhone 端
 
-## Start Contributing
+iPhone 端使用 Shortcuts 作为入口。
 
-Open an issue if you can help with:
+语音/笔记流程：
 
-- A hardware device that captures audio, video, location, biometrics, or environmental context.
-- A software integration for screen capture, OCR, speech-to-text, photos, health data, or files.
-- A memory layer for timelines, vector search, knowledge graphs, or agent memory.
-- A privacy model for local-first storage, encryption, retention, redaction, and consent.
-- A UX idea for reviewing, searching, editing, and talking to personal memory.
+1. 使用快捷指令录音。
+2. 调用系统转录能力生成文本。
+3. 将音频和文本保存到 iCloud Drive。
+4. Mac 端自动从 iCloud Drive 收件箱归档到外置硬盘。
+
+建议目录：
+
+```text
+iCloud Drive/SecondBrain_Inbox/iPhone/Voice
+iCloud Drive/SecondBrain_Inbox/iPhone/Note
+```
+
+### Android 端
+
+Android 端使用 FolderSync + SMB。
+
+同步流程：
+
+1. Mac 开启文件共享，并启用 SMB。
+2. 将外置硬盘收件箱作为共享目标。
+3. Android 安装 FolderSync。
+4. 设置定时同步，把手机指定文件夹写入 Mac 外置硬盘。
+
+后续可接入 Tasker：
+
+- 通知记录
+- 短信记录
+- 通话记录
+- 位置或状态记录
+
+V1 不默认启用这些敏感数据采集，只预留入口。
+
+### 外部录音与环境监控
+
+如果后续有摄像头、录音笔、门口监控或其他设备数据，统一走“设备导出目录 -> Mac 收件箱 -> 外置硬盘归档”的路径。
+
+V1 只预留目录，不实际采集敏感流。
+
+## AI 智能查询层
+
+后续 AI 查询层采用本地优先方案。
+
+- 底层模型：Ollama，运行 Llama 3 / Qwen 2.5 等本地模型。
+- 向量中台：AnythingLLM 或 Dify，本地部署。
+- 数据目录：向量数据库和工作区数据优先指向外置硬盘。
+
+预留路径：
+
+```text
+/Volumes/SecondBrain_Vault/ai/anythingllm/
+```
+
+实施顺序：
+
+1. 先让原始数据连续稳定沉淀。
+2. 再做文本清洗、音频转录、图片 OCR。
+3. 最后接入 AnythingLLM / Dify / Ollama 做本地 RAG 检索。
+
+## Lifelogging 是什么
+
+Lifelogging 是利用技术手段，自动、持续地记录个人生活经历的过程。
+
+它不只是数字日记，而是第二大脑的原材料工厂。它要解决的问题，是如何为人生安装一个黑匣子，让每一秒发生的客观事实都变成可审计、可搜索、可复盘的数字资产。
+
+可以记录的内容包括：
+
+- 你看到的：屏幕截图、摄像头画面、浏览过的网页。
+- 你听到的：会议录音、语音备忘、环境声音。
+- 你创造的：文档修改、代码提交、剪贴板历史。
+- 你的状态：位置、心率、睡眠、App 使用时长。
+
+## 为什么 Lifelogging 是第二大脑的原材料
+
+很多人把第二大脑理解为 Notion、Obsidian 这样的笔记软件。但如果只记录自己“意识到需要记录”的内容，就会丢失绝大多数信息。
+
+真正的第二大脑不应该只包含笔记，更应该包含经历。
+
+- 笔记是主观加工，可能有偏见和遗漏。
+- Lifelogging 数据是生活的原始采样，更接近客观事实。
+
+没有 Lifelogging 的第二大脑，就像没有原材料的系统。只有全天候的数据采集建立后，第二大脑才拥有追溯事实的能力。
+
+## Gordon Bell 的启发
+
+微软研究院的 Gordon Bell 早在 1990 年代末就启动了 MyLifeBits 实验。他扫描收据、保存邮件、录下电话，甚至佩戴自动拍照设备，试图数字化自己的一切。
+
+这个实验在当时很难普及，核心问题是：数据太多，但检索和理解成本太高。
+
+过去的计算机只能保存像素、文件和波形，并不理解照片里是谁，也不理解录音里在聊什么。今天的 AI 改变了这一点。大模型可以读懂截图、听懂会议、理解文本，并用语义方式检索过去发生的事情。
+
+这就是为什么 Lifelogging 在 AI 时代重新变得重要。
+
+## 创业者视角：把生活变成可审计资产
+
+创业者习惯审计财务报表和公司税收，但很少审计自己的决策过程和时间投向。
+
+Lifelogging 的本质，是为人生提供一份随时可调用的审计日志。
+
+### 决策回溯
+
+当你三个月后怀疑某个项目决策是否正确时，系统可以帮你回到当时：会议记录、行业分析、沟通上下文、甚至当时的状态数据都会成为复盘依据。
+
+### 降低认知负担
+
+你不必强迫自己记住所有细节，因为系统会在后台持续记录。这会释放认知带宽，让你把精力集中在判断和创造上。
+
+### 从碎片中提取规律
+
+当数据连续积累后，AI 可以帮助发现长期模式，例如哪些时间段效率更低、哪些会议类型最消耗注意力、哪些主题反复出现但没有推进。
+
+## 指挥官模式
+
+这个系统的建设原则是：记录归工具，理解归 AI，洞察归人。
+
+- 记录：交给 Rewind、Limitless、Screenpipe、Shortcuts、FolderSync、Tasker 等工具。
+- 理解：交给本地 AI、向量数据库和 RAG 系统。
+- 洞察：由使用者提出问题、判断价值、做出决策。
+
+重点不是手动整理文件，而是建立稳定的数据流向。
+
+## 隐私与稳健性原则
+
+- 本地优先。
+- 原始数据不主动上传外部服务。
+- 除非明确需要，不调用外部大模型 API。
+- 数据不得离港。
+- 外置硬盘未挂载时不创建假目录，不执行归档。
+- 默认复制保留原文件，降低误删风险。
+- 后续所有脚本必须具备错误记录、失败保护和自动重启机制。
+
+## 建设路线
+
+### 第一阶段：最低同步版本
+
+完成 Mac、iPhone、Android 的文件级同步，让数据按天进入外置硬盘。
+
+### 第二阶段：结构化处理
+
+对音频、图片、截图、文档做转录、OCR、摘要和基础标签。
+
+### 第三阶段：本地 RAG
+
+部署 AnythingLLM / Dify / Ollama，把外置硬盘中的数据接入本地检索与问答。
+
+### 第四阶段：全场景 Lifelogging
+
+逐步接入录屏、会议、摄像头、录音笔、位置、健康数据和环境监控。
+
+## 关键总结
+
+- Lifelogging 是人生黑匣子，记录客观事实。
+- AI 解决了过去数据太多、难以检索的问题。
+- 第二大脑不只是笔记，而是经历、文件、音频、图片、状态的统一数据资产。
+- 第一阶段先做同步底座，不追求一次到位。
+- 先集成现成软件，再根据真实使用情况决定是否开发脚本。
 
 ## License
 
 Code is licensed under Apache-2.0. Documentation, concepts, and project materials are licensed under CC-BY-4.0.
-
